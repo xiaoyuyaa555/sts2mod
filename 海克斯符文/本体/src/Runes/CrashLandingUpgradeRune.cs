@@ -1,4 +1,3 @@
-#if !STS2_99_1 && !STS2_100_0
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -43,7 +42,7 @@ public sealed class CrashLandingUpgradeRune : CardUpgradeRuneBase<CrashLanding>
 			.WithHitVfxSpawnedAtBase()
 			.Execute(choiceContext);
 
-		int cardsToAdd = CardPile.MaxCardsInHand - CardPile.GetCards(card.Owner, PileType.Hand).Count();
+		int cardsToAdd = CombatCompat.MaxCardsInHand - CardPile.GetCards(card.Owner, PileType.Hand).Count();
 		if (cardsToAdd <= 0)
 		{
 			return;
@@ -55,7 +54,6 @@ public sealed class CrashLandingUpgradeRune : CardUpgradeRuneBase<CrashLanding>
 			collisionCourses.Add(combatState.CreateCard<CollisionCourse>(card.Owner));
 		}
 
-		await CardPileCmd.AddGeneratedCardsToCombat(collisionCourses, PileType.Hand, card.Owner);
+		await HextechCardGeneration.AddGeneratedCardsToCombat(collisionCourses, PileType.Hand, addedByPlayer: true);
 	}
 }
-#endif

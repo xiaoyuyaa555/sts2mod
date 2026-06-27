@@ -1,4 +1,3 @@
-#if !STS2_99_1 && !STS2_100_0
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Cards;
 
@@ -17,4 +16,3 @@ internal static partial class HextechPlayerRuneHooks
 		return false;
 	}
 }
-#endif

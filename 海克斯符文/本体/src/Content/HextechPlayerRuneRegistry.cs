@@ -141,9 +141,7 @@ internal static class HextechPlayerRuneRegistry
         Rune<NatureIsHealingRune>(HextechRarityTier.Gold, tagKey: "SURVIVAL"),
         Rune<PorcupineRune>(HextechRarityTier.Gold, tagKey: "SURVIVAL"),
         Rune<SnailFormRune>(HextechRarityTier.Gold, tagKey: "SURVIVAL"),
-#if !STS2_99_1 && !STS2_100_0
         Rune<ColorDiscoveryRune>(HextechRarityTier.Gold, tagKey: "COMPREHENSIVE"),
-#endif
         Rune<HattrickRune>(HextechRarityTier.Gold, tagKey: "COMPREHENSIVE"),
         Rune<AnthonyBiasRune>(HextechRarityTier.Gold, flags: PlayerRuneFlags.Disabled, tagKey: "COMPREHENSIVE"),
         Rune<OmegaRune>(HextechRarityTier.Gold, tagKey: "OUTPUT"),
@@ -158,9 +156,7 @@ internal static class HextechPlayerRuneRegistry
         Rune<EndlessRecoveryRune>(HextechRarityTier.Gold, flags: PlayerRuneFlags.Disabled, tagKey: "COMPREHENSIVE"),
         Rune<SpeedsterRune>(HextechRarityTier.Gold, tagKey: "RESOURCE"),
         Rune<ServantMasterRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Necrobinder, characterOrder: 1, tagKey: "SUMMON"),
-#if !STS2_99_1 && !STS2_100_0
         Rune<SoulEaterRune>(HextechRarityTier.Gold, tagKey: "SURVIVAL"),
-#endif
         Rune<DonationRune>(HextechRarityTier.Gold, tagKey: "ECONOMY"),
         Rune<TwiceThriceRune>(HextechRarityTier.Gold, tagKey: "OUTPUT"),
         Rune<BreadAndButterRune>(HextechRarityTier.Gold, tagKey: "OUTPUT"),
@@ -226,9 +222,7 @@ internal static class HextechPlayerRuneRegistry
         Rune<StardustUpgradeRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Regent, characterOrder: 16, tagKey: "STARLIGHT"),
         Rune<FallingStarUpgradeRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Regent, characterOrder: 20, tagKey: "STARLIGHT"),
         Rune<BodyguardUpgradeRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Necrobinder, characterOrder: 19, tagKey: "SUMMON"),
-#if !STS2_99_1 && !STS2_100_0
         Rune<BorrowedTimeUpgradeRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Necrobinder, characterOrder: 20, tagKey: "RESOURCE"),
-#endif
         Rune<UnleashUpgradeRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Necrobinder, characterOrder: 24, tagKey: "SUMMON"),
         Rune<MiseryUpgradeRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Necrobinder, characterOrder: 27, tagKey: "DOOM"),
         Rune<GoldCardCustomerRune>(HextechRarityTier.Gold, tagKey: "ECONOMY"),
@@ -246,15 +240,11 @@ internal static class HextechPlayerRuneRegistry
 #endif
         Rune<SkyDrillUpgradeRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Regent, characterOrder: 21, tagKey: "OUTPUT"),
         Rune<TrinityRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Regent, characterOrder: 22, tagKey: "STARLIGHT"),
-#if !STS2_99_1 && !STS2_100_0
         Rune<CrashLandingUpgradeRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Regent, characterOrder: 23, tagKey: "OUTPUT"),
-#endif
         Rune<ChargeUpRune>(HextechRarityTier.Gold, tagKey: "RESOURCE"),
         Rune<AutoPatrolRune>(HextechRarityTier.Gold, characterPool: PlayerRuneCharacterPool.Necrobinder, characterOrder: 31, tagKey: "SUMMON"),
         Rune<DeathHarvestRune>(HextechRarityTier.Gold, tagKey: "SURVIVAL"),
-#if !STS2_99_1 && !STS2_100_0
         Rune<HundredRefinementsRune>(HextechRarityTier.Gold, tagKey: "RANDOM"),
-#endif
 
         Rune<EurekaRune>(HextechRarityTier.Prismatic, tagKey: "RESOURCE"),
         Rune<InfiniteLoopRune>(HextechRarityTier.Prismatic, flags: PlayerRuneFlags.ThirdActExcluded, tagKey: "STACKING"),

@@ -1,4 +1,3 @@
-#if !STS2_99_1 && !STS2_100_0
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -140,4 +139,3 @@ public sealed class ColorDiscoveryRune : HextechRelicBase
 		yield return ModelDb.CardPool<DefectCardPool>();
 	}
 }
-#endif

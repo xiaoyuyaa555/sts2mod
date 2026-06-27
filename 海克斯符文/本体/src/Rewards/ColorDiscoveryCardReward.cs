@@ -1,4 +1,3 @@
-#if !STS2_99_1 && !STS2_100_0
 using System.Reflection;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -24,7 +23,11 @@ internal sealed class ColorDiscoveryCardReward : CardReward
 		Player player,
 		CardCreationSource source = CardCreationSource.Encounter,
 		CardRarityOddsType rarityOdds = CardRarityOddsType.Uniform)
+#if STS2_104_OR_NEWER
 		: base(CreateCardsToOffer(cardId, player), source, player, CreateRerollOptions(cardId, source, rarityOdds))
+#else
+		: base(CreateCardsToOffer(cardId, player), source, player)
+#endif
 	{
 		_cardId = cardId;
 		_source = source;
@@ -38,7 +41,11 @@ internal sealed class ColorDiscoveryCardReward : CardReward
 		Player player,
 		CardCreationSource source,
 		CardRarityOddsType rarityOdds)
+#if STS2_104_OR_NEWER
 		: base([card], source, player, CreateRerollOptions(cardId, source, rarityOdds))
+#else
+		: base([card], source, player)
+#endif
 	{
 		_cardId = cardId;
 		_source = source;
@@ -46,12 +53,14 @@ internal sealed class ColorDiscoveryCardReward : CardReward
 		CanReroll = false;
 	}
 
+#if !STS2_99_1
 	public static ColorDiscoveryCardReward FromSavedReward(SerializableReward save, Player player)
 	{
 		CardCreationSource source = save.Source;
 		CardRarityOddsType rarityOdds = save.RarityOdds;
 		return new ColorDiscoveryCardReward(save.PredeterminedModelId, player, source, rarityOdds);
 	}
+#endif
 
 	public static ColorDiscoveryCardReward FromSavedSpecialCardReward(SerializableReward save, Reward restoredReward, Player player)
 	{
@@ -81,7 +90,9 @@ internal sealed class ColorDiscoveryCardReward : CardReward
 			RarityOdds = _rarityOdds,
 			OptionCount = 1,
 			SpecialCard = card.ToSerializable(),
+#if !STS2_99_1
 			PredeterminedModelId = ModelDb.GetId<ColorDiscoveryRune>(),
+#endif
 		};
 	}
 
@@ -114,4 +125,3 @@ internal sealed class ColorDiscoveryCardReward : CardReward
 		return cards.FirstOrDefault()?.Card;
 	}
 }
-#endif

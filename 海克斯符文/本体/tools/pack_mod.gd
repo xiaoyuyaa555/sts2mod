@@ -13,7 +13,7 @@ func _init() -> void:
 	var import_project_root := args[2] if args.size() == 3 else ""
 	var asset_root := manifest_source.get_base_dir()
 	var manifest_name := manifest_source.get_file()
-	var manifest_json := JSON.parse_string(FileAccess.get_file_as_string(manifest_source))
+	var manifest_json: Variant = JSON.parse_string(FileAccess.get_file_as_string(manifest_source))
 	if typeof(manifest_json) != TYPE_DICTIONARY:
 		push_error("manifest json is not a JSON object")
 		quit(1)

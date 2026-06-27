@@ -99,6 +99,12 @@ internal static partial class HextechRunLifecycleHooks
 			&& runState.CurrentRoom is EventRoom { CanonicalEvent: AncientEventModel };
 	}
 
+	private static bool ShouldDeferActSelectionForStartRun(RunState runState)
+	{
+		return ShouldDeferActSelectionUntilAfterCurrentEvent(runState)
+			|| runState.CurrentRoom == null;
+	}
+
 	private static string DescribeCurrentEventState(RunState runState)
 	{
 		if (runState.CurrentRoom is not EventRoom eventRoom)

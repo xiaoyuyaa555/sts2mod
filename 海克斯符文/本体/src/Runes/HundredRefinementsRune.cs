@@ -1,4 +1,3 @@
-#if !STS2_99_1 && !STS2_100_0
 using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Rewards;
@@ -51,7 +50,11 @@ public sealed class HundredRefinementsRune : HextechRelicBase
 		alternatives.Add(new CardRewardAlternative(
 			BodyForgeOptionId,
 			ForgeBodyForAllInstances,
+#if STS2_99_1 || STS2_100_0
+			PostAlternateCardRewardAction.DismissScreenAndRemoveReward));
+#else
 			PostAlternateCardRewardAction.EndSelectionAndCompleteReward));
+#endif
 		return true;
 	}
 
@@ -93,4 +96,3 @@ public sealed class HundredRefinementsRune : HextechRelicBase
 
 	private int BodyForgeThreshold => Math.Max(1, DynamicVars["BodyForges"].IntValue);
 }
-#endif

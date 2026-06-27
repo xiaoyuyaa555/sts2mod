@@ -237,7 +237,8 @@ internal static partial class HextechRuneSelectionCoordinator
 	private static MonsterHexKind? ChooseMonsterHexForAct(HextechMayhemModifier modifier, HextechRarityTier rarity, RunState runState, IEnumerable<MonsterHexKind>? extraExcludedHexes = null)
 	{
 		IReadOnlyList<MonsterHexKind> pool = HextechMonsterHexRoller.BuildActPool(rarity, modifier.GetKnownMonsterHexes(), extraExcludedHexes, modifier.DisabledMonsterHexIdsForPool);
-		return pool.Count > 0 ? pool[runState.Rng.Niche.NextInt(pool.Count)] : null;
+		MonsterHexKind? chosen = pool.Count > 0 ? pool[runState.Rng.Niche.NextInt(pool.Count)] : null;
+		return HextechTestRuneOverride.TryOverrideEnemyHex(modifier, rarity, runState, runState.CurrentActIndex, pool, chosen);
 	}
 
 	private static MonsterHexKind? ChooseStableMonsterHexForAct(HextechMayhemModifier modifier, HextechRarityTier rarity, RunState runState, int actIndex, IEnumerable<MonsterHexKind>? extraExcludedHexes = null, int ordinal = 0)

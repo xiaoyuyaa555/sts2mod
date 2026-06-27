@@ -26,6 +26,7 @@ public static class ModEntry
 
 			HextechModelBootstrap.Install();
 			HextechRuneConfiguration.Initialize();
+			HextechTestMode.Initialize();
 			HextechTelemetry.Initialize();
 			Harmony harmony = _harmony ??= new Harmony(HarmonyId);
 			#if !STS2_99_1 && !STS2_100_0
@@ -37,6 +38,7 @@ public static class ModEntry
 			HextechSelfUpgradeCardStore.Install(harmony);
 			HextechCustomRunModifierHooks.Install(harmony);
 			HextechRunLifecycleHooks.Install(harmony);
+			TryInstallOptionalHookGroup("BetterSpire Hold-R restart compatibility", () => HextechBetterSpireRestartCompatHooks.Install(harmony));
 			HextechCombatHooks.Install(harmony);
 			HextechEnemyPowerScalingHooks.Install(harmony);
 			TryInstallOptionalHookGroup("artifact encounter compatibility", () => HextechArtifactCompatibilityHooks.Install(harmony));
@@ -64,7 +66,7 @@ public static class ModEntry
 			TryInstallOptionalHookGroup("game over score line compatibility", () => HextechGameOverCompatibilityHooks.Install(harmony));
 #endif
 			_initialized = true;
-			// 加载确认行保持始终输出（headless 验证与用户排障都依赖它），不走 verbose 门控。
+			// Always emit this load confirmation; headless smoke tests and user diagnostics depend on it.
 			Log.Info($"[{ModInfo.Id}] Loaded for Slay the Spire 2 {ModInfo.TargetGameVersion}.");
 		}
 	}

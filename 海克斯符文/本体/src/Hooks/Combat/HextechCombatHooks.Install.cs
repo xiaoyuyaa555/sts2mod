@@ -233,38 +233,85 @@ internal static partial class HextechCombatHooks
 				typeof(CardModel)),
 			prefix: new HarmonyMethod(typeof(HextechCombatHooks), nameof(ActualDamageCommandPrefix)),
 			postfix: new HarmonyMethod(typeof(HextechCombatHooks), nameof(ActualDamageCommandPostfix)));
-		harmony.Patch(
-			RequireMethod(
-				typeof(SlipperyPower),
-				nameof(SlipperyPower.ModifyHpLostAfterOsty),
-				BindingFlags.Instance | BindingFlags.Public,
-				typeof(Creature),
-				typeof(decimal),
-				typeof(ValueProp),
-				typeof(Creature),
-				typeof(CardModel)),
-			postfix: new HarmonyMethod(typeof(HextechCombatHooks), nameof(SlipperyModifyHpLostAfterOstyPostfix)));
-		harmony.Patch(
-			RequireMethod(
-				typeof(SlipperyPower),
-				nameof(SlipperyPower.AfterDamageReceived),
-				BindingFlags.Instance | BindingFlags.Public,
+		InstallSlipperyCompatibilityHooks(harmony);
+	}
+
+	private static void InstallSlipperyCompatibilityHooks(Harmony harmony)
+	{
+		// v0.99.1 的 SlipperyPower 未声明 ModifyHpLostAfterOsty,只有 AbstractModel 上的虚方法。
+		// 直接 patch 继承方法会触发 Harmony 的 "patch the declared method instead" 异常并中断整个 Mod 初始化。
+		MethodInfo? slipperyModifyHpLostAfterOsty = AccessTools.DeclaredMethod(
+			typeof(SlipperyPower),
+			nameof(SlipperyPower.ModifyHpLostAfterOsty),
+			[typeof(Creature), typeof(decimal), typeof(ValueProp), typeof(Creature), typeof(CardModel)]);
+		if (slipperyModifyHpLostAfterOsty == null)
+		{
+			Log.Warn($"[{ModInfo.Id}][Mayhem] Optional combat hook skipped: SlipperyPower.ModifyHpLostAfterOsty is not declared on this game version.");
+		}
+		else
+		{
+			TryPatchCombatHook(
+				harmony,
+				slipperyModifyHpLostAfterOsty,
+				"SlipperyPower.ModifyHpLostAfterOsty",
+				postfix: new HarmonyMethod(typeof(HextechCombatHooks), nameof(SlipperyModifyHpLostAfterOstyPostfix)));
+		}
+
+		MethodInfo? slipperyAfterDamageReceived = AccessTools.DeclaredMethod(
+			typeof(SlipperyPower),
+			nameof(SlipperyPower.AfterDamageReceived),
+			[
 				typeof(PlayerChoiceContext),
 				typeof(Creature),
 				typeof(DamageResult),
 				typeof(ValueProp),
 				typeof(Creature),
-				typeof(CardModel)),
-			postfix: new HarmonyMethod(typeof(HextechCombatHooks), nameof(SlipperyAfterDamageReceivedPostfix)));
-		harmony.Patch(
-			RequireMethod(
-				typeof(DieForYouPower),
-				nameof(DieForYouPower.ModifyUnblockedDamageTarget),
-				BindingFlags.Instance | BindingFlags.Public,
-				typeof(Creature),
-				typeof(decimal),
-				typeof(ValueProp),
-				typeof(Creature)),
+				typeof(CardModel)
+			]);
+		if (slipperyAfterDamageReceived == null)
+		{
+			Log.Warn($"[{ModInfo.Id}][Mayhem] Optional combat hook skipped: SlipperyPower.AfterDamageReceived is not declared on this game version.");
+		}
+		else
+		{
+			TryPatchCombatHook(
+				harmony,
+				slipperyAfterDamageReceived,
+				"SlipperyPower.AfterDamageReceived",
+				postfix: new HarmonyMethod(typeof(HextechCombatHooks), nameof(SlipperyAfterDamageReceivedPostfix)));
+		}
+
+		MethodInfo? dieForYouModifyUnblockedDamageTarget = AccessTools.DeclaredMethod(
+			typeof(DieForYouPower),
+			nameof(DieForYouPower.ModifyUnblockedDamageTarget),
+			[typeof(Creature), typeof(decimal), typeof(ValueProp), typeof(Creature)]);
+		if (dieForYouModifyUnblockedDamageTarget == null)
+		{
+			Log.Warn($"[{ModInfo.Id}][Mayhem] Optional combat hook skipped: DieForYouPower.ModifyUnblockedDamageTarget is not declared on this game version.");
+			return;
+		}
+
+		TryPatchCombatHook(
+			harmony,
+			dieForYouModifyUnblockedDamageTarget,
+			"DieForYouPower.ModifyUnblockedDamageTarget",
 			postfix: new HarmonyMethod(typeof(HextechCombatHooks), nameof(DieForYouModifyUnblockedDamageTargetPostfix)));
+	}
+
+	private static void TryPatchCombatHook(
+		Harmony harmony,
+		MethodInfo target,
+		string label,
+		HarmonyMethod? prefix = null,
+		HarmonyMethod? postfix = null)
+	{
+		try
+		{
+			harmony.Patch(target, prefix, postfix);
+		}
+		catch (Exception ex)
+		{
+			Log.Warn($"[{ModInfo.Id}][Mayhem] Optional combat hook failed: {label}: {ex.GetType().Name}: {ex.Message}");
+		}
 	}
 }

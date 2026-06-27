@@ -1,4 +1,3 @@
-#if !STS2_99_1 && !STS2_100_0
 using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
@@ -95,8 +94,14 @@ public sealed class SoulEaterRune : HextechRelicBase
 
 	private static bool IsTransientInfiniteHpState(Creature target)
 	{
+#if STS2_99_1 || STS2_100_0
+		// v0.99/v0.100 do not expose Creature.HpDisplay. Keep the hard-cap guard;
+		// TODO verify whether old builds have an equivalent infinite-HP display flag.
+		return target.MaxHp >= CreatureStatHardCap;
+#else
 		return target.HpDisplay is HpDisplay.InfiniteWithNumbers or HpDisplay.InfiniteWithoutNumbers
 			|| target.MaxHp >= CreatureStatHardCap;
+#endif
 	}
 
 	private static int GetScaledInitialMonsterMaxHp(Creature target)
@@ -120,4 +125,3 @@ public sealed class SoulEaterRune : HextechRelicBase
 		return Math.Clamp(FloorToInt(scaledMaxHp), 1, CreatureStatHardCap);
 	}
 }
-#endif

@@ -48,6 +48,11 @@ internal static class HextechRunePoolBuilder
 	{
 		List<RelicModel> pool = BuildSelectableRunePool(player, rarity, runState, excludedIds);
 		Dictionary<string, int> tagCounts = BuildOwnedRuneTagCounts(player, useEndlessTagWindow);
+		List<RelicModel>? testOverride = HextechTestRuneOverride.TryBuildPlayerRuneOffers(player, rarity, runState, pool, tagCounts, useEndlessTagWindow);
+		if (testOverride != null)
+		{
+			return testOverride;
+		}
 
 		List<RelicModel> options = [];
 		int picks = Math.Min(3, pool.Count);
