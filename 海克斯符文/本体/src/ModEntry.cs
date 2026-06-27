@@ -28,7 +28,9 @@ public static class ModEntry
 			HextechRuneConfiguration.Initialize();
 			HextechTelemetry.Initialize();
 			Harmony harmony = _harmony ??= new Harmony(HarmonyId);
+			#if !STS2_99_1 && !STS2_100_0
 			TryInstallOptionalHookGroup("model id serialization warning compatibility", () => HextechModelIdSerializationWarningHooks.Install(harmony));
+#endif
 			HextechMultiplayerCompatibilityHooks.Install(harmony);
 			HextechMobileModelRegistrationHooks.Install(harmony);
 			ThoughtOverwriteKeywordPersistenceHooks.Install(harmony);
@@ -50,11 +52,17 @@ public static class ModEntry
 				TryInstallOptionalHookGroup("relic UI safety", () => HextechUiSafetyHooks.Install(harmony));
 			TryInstallOptionalHookGroup("player stats hover", () => HextechPlayerStatsHoverHooks.Install(harmony));
 			TryInstallOptionalHookGroup("rune configuration menu", () => HextechRuneConfigMenuHooks.Install(harmony));
+			#if !STS2_99_1 && !STS2_100_0
 			TryInstallOptionalHookGroup("reward serialization safety", () => HextechRewardSafetyHooks.Install(harmony));
+#endif
 			TryInstallOptionalHookGroup("relic visibility toggle", () => HextechRelicVisibilityHooks.Install(harmony));
 			TryInstallOptionalHookGroup("hand of baron aura visual", () => HextechBaronAuraHooks.Install(harmony));
+			#if !STS2_99_1 && !STS2_100_0
 			TryInstallOptionalHookGroup("burn health bar prediction", () => HextechBurnHealthBarHooks.Install(harmony));
+#endif
+			#if STS2_107_OR_NEWER
 			TryInstallOptionalHookGroup("game over score line compatibility", () => HextechGameOverCompatibilityHooks.Install(harmony));
+#endif
 			_initialized = true;
 			// 加载确认行保持始终输出（headless 验证与用户排障都依赖它），不走 verbose 门控。
 			Log.Info($"[{ModInfo.Id}] Loaded for Slay the Spire 2 {ModInfo.TargetGameVersion}.");

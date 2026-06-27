@@ -1,3 +1,4 @@
+#if !STS2_99_1 && !STS2_100_0
 using Godot;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
@@ -119,3 +120,4 @@ public sealed class SoulEaterRune : HextechRelicBase
 		return Math.Clamp(FloorToInt(scaledMaxHp), 1, CreatureStatHardCap);
 	}
 }
+#endif

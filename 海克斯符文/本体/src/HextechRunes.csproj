@@ -6,10 +6,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GameRoot>/Users/iniad/Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app</GameRoot>
-    <OfficialGameDataDir>$(MSBuildThisFileDirectory)../versioned-dll-backups/0.107.1/game-refs</OfficialGameDataDir>
+    <VersionedRefsRoot>$(MSBuildThisFileDirectory)../versioned-dll-backups</VersionedRefsRoot>
+    <OfficialGameDataDir>$(VersionedRefsRoot)/$(HextechSts2Target)/game-refs</OfficialGameDataDir>
     <GameDataDir Condition="'$(GameDataDir)' == '' and Exists('$(OfficialGameDataDir)/sts2.dll')">$(OfficialGameDataDir)</GameDataDir>
     <GameDataDir Condition="'$(GameDataDir)' == ''">$(GameRoot)/Contents/Resources/data_sts2_macos_arm64</GameDataDir>
     <HextechSts2Target Condition="'$(HextechSts2Target)' == ''">0.107.1</HextechSts2Target>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(HextechSts2Target)' == '0.99.1'">
+    <DefineConstants>$(DefineConstants);STS2_99_1</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(HextechSts2Target)' == '0.100.0'">
+    <DefineConstants>$(DefineConstants);STS2_100_0</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(HextechSts2Target)' == '0.103.2'">

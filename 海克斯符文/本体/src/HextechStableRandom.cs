@@ -181,7 +181,11 @@ internal static class HextechStableRandom
 			CardKey(card),
 			card.Owner == null ? "owner:none" : PlayerKey(card.Owner),
 			"play",
+			#if STS2_99_1 || STS2_100_0
+			"-1",
+#else
 			GetSafeInt(() => card.CurrentPlayIndex).ToString(),
+#endif
 			"target",
 			GetSafeCreatureKey(() => card.CurrentTarget),
 			"pile",

@@ -12,6 +12,7 @@ namespace HextechRunes;
 	{
 		private static bool DrawPrefix(PlayerChoiceContext choiceContext, decimal count, Player player, bool fromHandDraw, ref Task<IEnumerable<CardModel>> __result)
 		{
+			#if !STS2_99_1 && !STS2_100_0
 			CardInspectionRune? cardInspectionRune = player.GetRelic<CardInspectionRune>();
 			if (cardInspectionRune != null && fromHandDraw && count > 0m && player.Creature.CombatState != null)
 			{
@@ -23,6 +24,9 @@ namespace HextechRunes;
 					fromHandDraw: true);
 				return false;
 			}
+
+			#endif
+
 
 			NoNonsenseRune? noNonsenseRune = player.GetRelic<NoNonsenseRune>();
 			if (noNonsenseRune == null || fromHandDraw || count <= 0m || player.Creature.CombatState == null)

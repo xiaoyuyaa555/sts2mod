@@ -77,6 +77,8 @@ public sealed class ShoulderVakuRune : HextechRelicBase
 
 #if STS2_104_OR_NEWER
 	public override Task AfterAutoPrePlayPhaseEnteredLate(PlayerChoiceContext choiceContext, Player player)
+#elif STS2_99_1 || STS2_100_0
+	public override Task BeforePlayPhaseStart(PlayerChoiceContext choiceContext, Player player)
 #else
 	public override Task BeforePlayPhaseStartLate(PlayerChoiceContext choiceContext, Player player)
 #endif

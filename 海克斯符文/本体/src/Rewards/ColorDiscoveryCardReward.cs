@@ -1,3 +1,4 @@
+#if !STS2_99_1 && !STS2_100_0
 using System.Reflection;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -113,3 +114,4 @@ internal sealed class ColorDiscoveryCardReward : CardReward
 		return cards.FirstOrDefault()?.Card;
 	}
 }
+#endif

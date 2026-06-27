@@ -1,3 +1,4 @@
+#if !STS2_99_1 && !STS2_100_0
 using System.Reflection;
 using System.Threading;
 using MegaCrit.Sts2.Core.Combat;
@@ -697,3 +698,4 @@ public sealed class DoubleVisionRune : HextechRelicBase
 		public CardRewardTracker? PreviousTracker { get; }
 	}
 }
+#endif

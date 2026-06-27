@@ -1,3 +1,4 @@
+#if !STS2_99_1 && !STS2_100_0
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Extensions;
@@ -45,3 +46,4 @@ public sealed class BorrowedTimeUpgradeRune : CardUpgradeRuneBase<BorrowedTime>
 		await PowerCmd.Apply<BorrowedTimePower>(Owner.Creature, -excess, Owner.Creature, cardPlay.Card, silent: true);
 	}
 }
+#endif

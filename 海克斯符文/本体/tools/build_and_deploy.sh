@@ -18,6 +18,8 @@ if [[ -z "${GODOT_EDITOR:-}" && -x "$DEFAULT_GODOT_EDITOR" ]]; then
 else
   GODOT_EDITOR="${GODOT_EDITOR:-/opt/homebrew/bin/godot}"
 fi
+REFS_991="$ROOT/versioned-dll-backups/0.99.1/game-refs"
+REFS_100="$ROOT/versioned-dll-backups/0.100.0/game-refs"
 REFS_1032="$ROOT/versioned-dll-backups/0.103.2/game-refs"
 REFS_1033="$ROOT/versioned-dll-backups/0.103.3/game-refs"
 REFS_104="$ROOT/versioned-dll-backups/0.104.0/game-refs"
@@ -61,6 +63,15 @@ fi
 
 HEXTECH_STS2_TARGET="${HEXTECH_STS2_TARGET:-$DEFAULT_STS2_TARGET}"
 case "$HEXTECH_STS2_TARGET" in
+  0.99.1*|0.99*)
+    HEXTECH_STS2_TARGET="0.99.1"
+    TARGET_REFS="$REFS_991"
+    MANIFEST_SRC="$ROOT/assets/$FILE_STEM.v0.99.1.json"
+    ;;
+  0.100.0*|0.100*)
+    HEXTECH_STS2_TARGET="0.100.0"
+    TARGET_REFS="$REFS_100"
+    ;;
   0.107.1*)
     HEXTECH_STS2_TARGET="0.107.1"
     TARGET_REFS="$REFS_1071"
@@ -101,7 +112,7 @@ esac
 
 if [[ "$HEXTECH_DEPLOY" != "0" ]]; then
   case "$HEXTECH_STS2_TARGET:$CURRENT_GAME_VERSION" in
-    0.103.2:0.103.2*|0.103.3:0.103.3*|0.104.0:0.104*|0.105.1:0.105*|0.106.1:0.106*|0.107.0:0.107.0*|0.107.1:0.107.1*|*:)
+    0.99.1:0.99.1*|0.100.0:0.100*|0.103.2:0.103.2*|0.103.3:0.103.3*|0.104.0:0.104*|0.105.1:0.105*|0.106.1:0.106*|0.107.0:0.107.0*|0.107.1:0.107.1*|*:)
       ;;
     *)
       if [[ "${HEXTECH_ALLOW_VERSION_MISMATCH:-0}" != "1" ]]; then
@@ -135,7 +146,7 @@ if [[ "$HEXTECH_DEPLOY" != "0" ]]; then
 fi
 
 cp "$ROOT/tools/project.godot" "$IMPORT_PROJECT/project.godot"
-rsync -a --exclude "$FILE_STEM.json" "$ROOT/assets/" "$IMPORT_PROJECT/$FILE_STEM/"
+rsync -a --exclude "$FILE_STEM.json" --exclude "$FILE_STEM.v0.99.1.json" "$ROOT/assets/" "$IMPORT_PROJECT/$FILE_STEM/"
 clean_macos_metadata "$IMPORT_PROJECT"
 
 "$GODOT_EDITOR" --headless \

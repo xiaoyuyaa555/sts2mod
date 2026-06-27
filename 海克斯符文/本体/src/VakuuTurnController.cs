@@ -59,7 +59,11 @@ internal static class VakuuTurnController
 		LocString line = cardsPlayed >= MaxCardsPlayed
 			? new LocString("relics", "WHISPERING_EARRING.warning")
 			: new LocString("relics", "WHISPERING_EARRING.approval");
+		#if STS2_99_1 || STS2_100_0
+		TalkCmd.Play(line, player.Creature, vfxColor: VfxColor.Purple);
+		#else
 		TalkCmd.Play(line, player.Creature, VfxColor.Purple);
+		#endif
 	}
 
 	private static Creature? GetTarget(Player owner, CardModel card, HextechCombatState combatState)

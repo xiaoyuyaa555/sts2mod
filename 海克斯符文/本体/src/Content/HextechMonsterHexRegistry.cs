@@ -108,7 +108,9 @@ internal static class HextechMonsterHexRegistry
 		Monster<CorrosionRune>(MonsterHexKind.Corrosion, HextechRarityTier.Silver),
 		Monster<BrutalityRune>(MonsterHexKind.Brutality, HextechRarityTier.Silver),
 		Monster<JudicatorRune>(MonsterHexKind.Judicator, HextechRarityTier.Gold),
+		#if !STS2_99_1 && !STS2_100_0
 		Monster<SoulEaterRune>(MonsterHexKind.SoulEater, HextechRarityTier.Gold),
+		#endif
 		Monster<DeathHarvestRune>(MonsterHexKind.DeathHarvest, HextechRarityTier.Gold),
 		Monster<GiantSlayerRune>(MonsterHexKind.GiantSlayer, HextechRarityTier.Prismatic),
 		Monster<DualWieldRune>(MonsterHexKind.DualWield, HextechRarityTier.Prismatic)

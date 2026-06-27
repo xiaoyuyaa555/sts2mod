@@ -1,3 +1,4 @@
+#if !STS2_99_1 && !STS2_100_0
 using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Logging;
@@ -104,3 +105,4 @@ internal static class HextechModelIdSerializationWarningHooks
 		return false;
 	}
 }
+#endif

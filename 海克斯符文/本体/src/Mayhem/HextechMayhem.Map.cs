@@ -28,7 +28,9 @@ internal sealed partial class HextechMayhemModifier
 		}
 
 		runState.Map = modifiedMap;
+		#if !STS2_99_1
 		runState.RemoveStaleVisitedMapCoords(modifiedMap);
+		#endif
 		try
 		{
 			NMapScreen.Instance?.SetMap(modifiedMap, runState.Rng.Seed, clearDrawings: true);

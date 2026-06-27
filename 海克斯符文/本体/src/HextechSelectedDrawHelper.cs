@@ -1,3 +1,4 @@
+#if !STS2_99_1 && !STS2_100_0
 using MegaCrit.Sts2.Core.Audio.Debug;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
@@ -124,3 +125,4 @@ internal static class HextechSelectedDrawHelper
 		ThinkCmd.Play(new LocString("combat_messages", key), player.Creature, 2.0);
 	}
 }
+#endif

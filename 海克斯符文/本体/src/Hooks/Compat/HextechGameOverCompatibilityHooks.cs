@@ -1,3 +1,4 @@
+#if STS2_107_OR_NEWER
 using System.Reflection;
 using Godot;
 using HarmonyLib;
@@ -132,3 +133,4 @@ internal static class HextechGameOverCompatibilityHooks
 		}
 	}
 }
+#endif

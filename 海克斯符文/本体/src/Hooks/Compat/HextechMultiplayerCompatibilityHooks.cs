@@ -84,6 +84,16 @@ internal static class HextechMultiplayerCompatibilityHooks
 
 	private static bool TryGetLoadedMod(string modId, out Mod? result)
 	{
+
+	#if STS2_99_1 || STS2_100_0
+
+	// TryGetLoadedMod unavailable: v0.99/v0.100 do not expose ModManager.GetLoadedMods; fall back to assembly-based local signature.
+
+	result = null;
+
+	return false;
+
+	#else
 		foreach (Mod mod in ModManager.GetLoadedMods())
 		{
 			if (string.Equals(mod.manifest?.id, modId, StringComparison.Ordinal))
@@ -95,6 +105,7 @@ internal static class HextechMultiplayerCompatibilityHooks
 
 		result = null;
 		return false;
+	#endif
 	}
 
 	internal static string BuildGameplayCompatibilityEntry(string modId, string version)

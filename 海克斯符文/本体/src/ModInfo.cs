@@ -8,7 +8,11 @@ internal static class ModInfo
 
     public const string Version = "0.8.2";
 
-#if STS2_107_1
+#if STS2_99_1
+    public const string TargetGameVersion = "0.99.1";
+#elif STS2_100_0
+    public const string TargetGameVersion = "0.100.0";
+#elif STS2_107_1
     public const string TargetGameVersion = "0.107.1";
 #elif STS2_107_OR_NEWER
     public const string TargetGameVersion = "0.107.0";

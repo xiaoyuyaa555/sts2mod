@@ -1,3 +1,4 @@
+#if !STS2_99_1 && !STS2_100_0
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -57,3 +58,4 @@ public sealed class CrashLandingUpgradeRune : CardUpgradeRuneBase<CrashLanding>
 		await CardPileCmd.AddGeneratedCardsToCombat(collisionCourses, PileType.Hand, card.Owner);
 	}
 }
+#endif
