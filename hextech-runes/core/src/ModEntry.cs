@@ -39,6 +39,9 @@ public static class ModEntry
 			HextechCustomRunModifierHooks.Install(harmony);
 			HextechRunLifecycleHooks.Install(harmony);
 			TryInstallOptionalHookGroup("BetterSpire Hold-R restart compatibility", () => HextechBetterSpireRestartCompatHooks.Install(harmony));
+			#if STS2_99_1 || STS2_100_0
+			TryInstallOptionalHookGroup("ancient relic obtain compatibility", () => HextechAncientRelicCompatHooks.Install(harmony));
+			#endif
 			HextechCombatHooks.Install(harmony);
 			HextechEnemyPowerScalingHooks.Install(harmony);
 			TryInstallOptionalHookGroup("artifact encounter compatibility", () => HextechArtifactCompatibilityHooks.Install(harmony));

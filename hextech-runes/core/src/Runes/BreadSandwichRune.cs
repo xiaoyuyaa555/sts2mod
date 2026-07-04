@@ -13,12 +13,18 @@ public sealed class BreadSandwichRune : HextechRelicBase
 
 	public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)
 	{
+		if (HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
+		{
+			return playCount;
+		}
+
 		return card.Owner == Owner ? playCount + DynamicVars["Replays"].IntValue : playCount;
 	}
 
 	public override Task AfterModifyingCardPlayCount(CardModel card)
 	{
-		if (card.Owner == Owner)
+		if (card.Owner == Owner
+			&& !HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
 		{
 			Flash();
 		}

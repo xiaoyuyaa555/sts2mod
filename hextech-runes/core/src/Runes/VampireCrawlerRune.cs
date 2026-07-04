@@ -30,6 +30,6 @@ public sealed class VampireCrawlerRune : HextechRelicBase
 			&& card.Type == CardType.Power
 			&& card.Pile?.Type == PileType.Play
 			&& cardPlay.ResultPile == PileType.None
-			&& cardPlay.PlayIndex + 1 >= Math.Max(1, cardPlay.PlayCount);
+			&& HextechReplayCompat.IsLastPlayInSeries(cardPlay);
 	}
 }

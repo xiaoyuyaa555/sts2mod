@@ -33,10 +33,10 @@ public sealed class ForgottenSoulRune : HextechRelicBase
 			&& card.Keywords.Contains(CardKeyword.Exhaust))
 		{
 			_preventedExhaustLastPlay = true;
-			return (PileType.Discard, position);
+			return HextechReplayCompat.RecordCardPlayResultPile(card, PileType.Discard, position);
 		}
 
-		return (pileType, position);
+		return HextechReplayCompat.RecordCardPlayResultPile(card, pileType, position);
 	}
 
 	public override Task AfterModifyingCardPlayResultPileOrPosition(CardModel card, PileType pileType, CardPilePosition position)

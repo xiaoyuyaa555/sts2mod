@@ -16,7 +16,9 @@ public sealed class EightPennyGateRune : HextechRelicBase
 
 	public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(CardModel card, bool isAutoPlay, ResourceInfo resources, PileType pileType, CardPilePosition position)
 	{
-		return ShouldReplayAndExhaust(card) ? (PileType.Exhaust, position) : (pileType, position);
+		return ShouldReplayAndExhaust(card)
+			? HextechReplayCompat.RecordCardPlayResultPile(card, PileType.Exhaust, position)
+			: HextechReplayCompat.RecordCardPlayResultPile(card, pileType, position);
 	}
 
 	public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)

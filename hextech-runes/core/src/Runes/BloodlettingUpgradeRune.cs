@@ -22,9 +22,9 @@ public sealed class BloodlettingUpgradeRune : CardUpgradeRuneBase<Bloodletting>
 		if (card.Owner == Owner && card is Bloodletting)
 		{
 			Flash();
-			return (PileType.Hand, CardPilePosition.Bottom);
+			return HextechReplayCompat.RecordCardPlayResultPile(card, PileType.Hand, CardPilePosition.Bottom);
 		}
 
-		return (pileType, position);
+		return HextechReplayCompat.RecordCardPlayResultPile(card, pileType, position);
 	}
 }

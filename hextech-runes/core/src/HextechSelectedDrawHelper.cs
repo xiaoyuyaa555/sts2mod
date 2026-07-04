@@ -1,4 +1,3 @@
-#if !STS2_99_1 && !STS2_100_0
 using MegaCrit.Sts2.Core.Audio.Debug;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
@@ -6,7 +5,6 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 
@@ -27,17 +25,16 @@ internal static class HextechSelectedDrawHelper
 			return Array.Empty<CardModel>();
 		}
 
-		ICombatState? combatState = player.Creature.CombatState;
-		if (combatState == null)
+		if (player.Creature.CombatState == null)
 		{
 			return Array.Empty<CardModel>();
 		}
 
-		if (!Hook.ShouldDraw(combatState, player, fromHandDraw, out AbstractModel? modifier))
+		if (!CombatCompat.ShouldDraw(player, fromHandDraw, out AbstractModel? modifier))
 		{
 			if (modifier != null)
 			{
-				await Hook.AfterPreventingDraw(combatState, modifier);
+				await CombatCompat.AfterPreventingDraw(player, modifier);
 			}
 
 			return Array.Empty<CardModel>();
@@ -45,7 +42,7 @@ internal static class HextechSelectedDrawHelper
 
 		CardPile hand = PileType.Hand.GetPile(player);
 		CardPile drawPile = PileType.Draw.GetPile(player);
-		int handSpace = Math.Max(0, CardPile.MaxCardsInHand - hand.Cards.Count);
+		int handSpace = Math.Max(0, CombatCompat.MaxCardsInHand - hand.Cards.Count);
 		if (handSpace == 0)
 		{
 			ShowDrawFailureThoughtBubble(player);
@@ -73,14 +70,13 @@ internal static class HextechSelectedDrawHelper
 		}
 
 		CardSelectorPrefs prefs = new(SelectDrawPrompt, cardsToSelect);
-		List<CardModel> selected = (await CardSelectCmd.FromCombatPile(choiceContext, drawPile, player, prefs))
-			.Take(cardsToSelect)
-			.ToList();
+		List<CardModel> selected = await SelectCardsFromDrawPile(choiceContext, drawPile, player, prefs);
+		selected = selected.Take(cardsToSelect).ToList();
 
 		List<CardModel> drawn = new(selected.Count);
 		foreach (CardModel card in selected)
 		{
-			if (CombatManager.Instance.IsOverOrEnding || hand.Cards.Count >= CardPile.MaxCardsInHand)
+			if (CombatManager.Instance.IsOverOrEnding || hand.Cards.Count >= CombatCompat.MaxCardsInHand)
 			{
 				break;
 			}
@@ -92,13 +88,31 @@ internal static class HextechSelectedDrawHelper
 
 			drawn.Add(card);
 			await CardPileCmd.Add(card, hand);
-			CombatManager.Instance.History.CardDrawn(combatState, card, fromHandDraw);
-			await Hook.AfterCardDrawn(combatState, choiceContext, card, fromHandDraw);
+			CombatCompat.RecordCardDrawn(player, card, fromHandDraw);
+			await CombatCompat.AfterCardDrawn(player, choiceContext, card, fromHandDraw);
 			card.InvokeDrawn();
 			NDebugAudioManager.Instance?.Play("card_deal.mp3", 0.25f, PitchVariance.Small);
 		}
 
 		return drawn;
+	}
+
+	private static async Task<List<CardModel>> SelectCardsFromDrawPile(
+		PlayerChoiceContext choiceContext,
+		CardPile drawPile,
+		Player player,
+		CardSelectorPrefs prefs)
+	{
+#if STS2_99_1 || STS2_100_0
+		// v0.99/v0.100 lack CardSelectCmd.FromCombatPile; show draw pile via simple grid instead.
+		return (await CardSelectCmd.FromSimpleGrid(
+			choiceContext,
+			drawPile.Cards.ToList(),
+			player,
+			prefs)).ToList();
+#else
+		return (await CardSelectCmd.FromCombatPile(choiceContext, drawPile, player, prefs)).ToList();
+#endif
 	}
 
 	private static async Task ShuffleIntoDrawPileIfShort(PlayerChoiceContext choiceContext, Player player, int requestedDraws)
@@ -114,15 +128,14 @@ internal static class HextechSelectedDrawHelper
 	private static bool CanDrawAnyCards(Player player)
 	{
 		return PileType.Draw.GetPile(player).Cards.Count + PileType.Discard.GetPile(player).Cards.Count > 0
-			&& PileType.Hand.GetPile(player).Cards.Count < CardPile.MaxCardsInHand;
+			&& PileType.Hand.GetPile(player).Cards.Count < CombatCompat.MaxCardsInHand;
 	}
 
 	private static void ShowDrawFailureThoughtBubble(Player player)
 	{
-		string key = PileType.Hand.GetPile(player).Cards.Count >= CardPile.MaxCardsInHand
+		string key = PileType.Hand.GetPile(player).Cards.Count >= CombatCompat.MaxCardsInHand
 			? "HAND_FULL"
 			: "NO_DRAW";
 		ThinkCmd.Play(new LocString("combat_messages", key), player.Creature, 2.0);
 	}
 }
-#endif

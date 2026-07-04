@@ -25,10 +25,10 @@ public sealed class DirgeUpgradeRune : CardUpgradeRuneBase<Dirge>
 		if (card.Owner == Owner && card is Dirge && pileType == PileType.Exhaust)
 		{
 			_preventedExhaustLastPlay = true;
-			return (PileType.Discard, position);
+			return HextechReplayCompat.RecordCardPlayResultPile(card, PileType.Discard, position);
 		}
 
-		return (pileType, position);
+		return HextechReplayCompat.RecordCardPlayResultPile(card, pileType, position);
 	}
 
 	public override Task AfterModifyingCardPlayResultPileOrPosition(CardModel card, PileType pileType, CardPilePosition position)

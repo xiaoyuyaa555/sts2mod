@@ -94,6 +94,11 @@ public abstract class FirstTypedCardReplayRuneBase : HextechRelicBase
 
 	private bool IsOwnedTargetType(CardModel? card)
 	{
+		if (HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
+		{
+			return false;
+		}
+
 		if (TargetCardType == CardType.Attack)
 		{
 			return IsOwnedAttack(card);

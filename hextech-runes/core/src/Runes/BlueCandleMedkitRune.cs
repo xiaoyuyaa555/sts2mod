@@ -51,7 +51,9 @@ public sealed class BlueCandleMedkitRune : HextechRelicBase
 
 	public override (PileType, CardPilePosition) ModifyCardPlayResultPileTypeAndPosition(CardModel card, bool isAutoPlay, ResourceInfo resources, PileType pileType, CardPilePosition position)
 	{
-		return CanAffect(card) ? (PileType.Exhaust, position) : (pileType, position);
+		return CanAffect(card)
+			? HextechReplayCompat.RecordCardPlayResultPile(card, PileType.Exhaust, position)
+			: HextechReplayCompat.RecordCardPlayResultPile(card, pileType, position);
 	}
 
 	internal static bool AllowsPlaying(CardModel card)

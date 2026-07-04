@@ -60,6 +60,15 @@ public sealed class JeweledGauntletRune : HextechRelicBase
 			return playCount;
 		}
 
+		// In LAN multiplayer, replaying Power cards can desync when host/client consume
+		// card-play modifiers in a different order for a remote player's action. Keep
+		// singleplayer behavior unchanged, and keep multiplayer attacks/skills enabled.
+		if (ShouldUseNetworkCombatHistory() && card.Type == CardType.Power)
+		{
+			ClearPendingReplayRoll();
+			return playCount;
+		}
+
 		int ordinal = ConsumeCombatProcOrdinal(nameof(JeweledGauntletRune), ref _replayRollsThisCombat);
 		bool shouldReplay = HextechStableRandom.PercentChance(
 			(RunState)Owner.RunState,

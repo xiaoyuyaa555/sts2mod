@@ -7,8 +7,8 @@ public sealed class OrobasBlessingRune : HextechRelicBase
 {
 	private static readonly Type[] RelicTypes =
 	[
-		typeof(ArchaicTooth),
-		typeof(TouchOfOrobas)
+		typeof(TouchOfOrobas),
+		typeof(ArchaicTooth)
 	];
 
 	public override bool HasUponPickupEffect => true;

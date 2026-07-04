@@ -93,7 +93,9 @@ public sealed class BlankCheckRune : HextechRelicBase
 		PileType pileType,
 		CardPilePosition position)
 	{
-		return ShouldAffectColorlessCard(card) ? (PileType.Exhaust, position) : (pileType, position);
+		return ShouldAffectColorlessCard(card)
+			? HextechReplayCompat.RecordCardPlayResultPile(card, PileType.Exhaust, position)
+			: HextechReplayCompat.RecordCardPlayResultPile(card, pileType, position);
 	}
 
 	private bool ShouldAffectColorlessCard(CardModel card)

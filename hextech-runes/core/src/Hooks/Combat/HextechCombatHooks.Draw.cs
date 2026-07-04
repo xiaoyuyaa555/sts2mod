@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 
@@ -12,10 +13,14 @@ namespace HextechRunes;
 	{
 		private static bool DrawPrefix(PlayerChoiceContext choiceContext, decimal count, Player player, bool fromHandDraw, ref Task<IEnumerable<CardModel>> __result)
 		{
-			#if !STS2_99_1 && !STS2_100_0
 			CardInspectionRune? cardInspectionRune = player.GetRelic<CardInspectionRune>();
-			if (cardInspectionRune != null && fromHandDraw && count > 0m && player.Creature.CombatState != null)
+			if (cardInspectionRune != null
+				&& HextechRuntimeRuneCompatibility.IsPlayerRuneAvailableForCurrentRuntime(typeof(CardInspectionRune))
+				&& fromHandDraw
+				&& count > 0m
+				&& player.Creature.CombatState != null)
 			{
+				Log.Info($"[{ModInfo.Id}][CardInspection] selected draw count={count} player={player.NetId}");
 				cardInspectionRune.Flash();
 				__result = HextechSelectedDrawHelper.DrawSelectedFromDrawPile(
 					choiceContext,
@@ -24,9 +29,6 @@ namespace HextechRunes;
 					fromHandDraw: true);
 				return false;
 			}
-
-			#endif
-
 
 			NoNonsenseRune? noNonsenseRune = player.GetRelic<NoNonsenseRune>();
 			if (noNonsenseRune == null || fromHandDraw || count <= 0m || player.Creature.CombatState == null)

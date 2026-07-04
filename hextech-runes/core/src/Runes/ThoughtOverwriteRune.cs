@@ -109,12 +109,20 @@ public sealed class ThoughtOverwriteRune : HextechRelicBase
 			return playCount;
 		}
 
+		if (HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
+		{
+			return playCount;
+		}
+
 		return playCount + DynamicVars["Replays"].IntValue;
 	}
 
 	public override Task AfterModifyingCardPlayCount(CardModel card)
 	{
-		if (Owner != null && card.Owner == Owner && card.Keywords.Contains(CardKeyword.Ethereal))
+		if (Owner != null
+			&& card.Owner == Owner
+			&& card.Keywords.Contains(CardKeyword.Ethereal)
+			&& !HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
 		{
 			Flash();
 		}

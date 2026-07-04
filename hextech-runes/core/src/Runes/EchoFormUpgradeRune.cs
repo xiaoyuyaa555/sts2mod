@@ -36,6 +36,11 @@ public sealed class EchoFormUpgradeRune : CardUpgradeRuneBase<EchoForm>
 			return false;
 		}
 
+		if (HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
+		{
+			return false;
+		}
+
 		decimal echoAmount = Owner.Creature.GetPowerAmount<EchoFormPower>();
 		if (echoAmount <= 0m)
 		{

@@ -12,7 +12,7 @@ internal sealed partial class HextechMayhemModifier
 {
 #if !STS2_105_OR_NEWER
 	private const int DoormakerShellMaxHpThreshold = 1_000_000;
-	private static readonly FieldInfo DoormakerIsPortalOpenField = RequireField(typeof(Doormaker), "_isPortalOpen");
+	private static readonly FieldInfo? DoormakerIsPortalOpenField = TryGetField(typeof(Doormaker), "_isPortalOpen");
 #endif
 	private static readonly FieldInfo TestSubjectRespawnsField = RequireField(typeof(TestSubject), "_respawns");
 
@@ -121,7 +121,13 @@ internal sealed partial class HextechMayhemModifier
 
 	private static bool IsDoormakerPortalOpen(Doormaker doormaker)
 	{
-		return DoormakerIsPortalOpenField.GetValue(doormaker) is true;
+		if (DoormakerIsPortalOpenField != null)
+		{
+			return DoormakerIsPortalOpenField.GetValue(doormaker) is true;
+		}
+
+		// v0.99/v0.100 Doormaker has no _isPortalOpen; TimesGotBackIn tracks door-revival phase instead.
+		return doormaker.TimesGotBackIn > 0;
 	}
 #endif
 

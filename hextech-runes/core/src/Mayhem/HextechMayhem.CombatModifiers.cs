@@ -121,6 +121,6 @@ internal sealed partial class HextechMayhemModifier
                 return current;
             });
 
-        return (pileType, position);
+        return HextechReplayCompat.RecordCardPlayResultPile(card, pileType, position);
     }
 }

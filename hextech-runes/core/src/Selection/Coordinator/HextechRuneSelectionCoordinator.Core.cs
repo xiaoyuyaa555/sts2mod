@@ -58,6 +58,8 @@ internal static partial class HextechRuneSelectionCoordinator
 				return;
 			}
 
+			await HextechLanSelectionCheckpoint.TryCreateBeforeSelectionAsync(runState, actIndex);
+
 			if (NMapScreen.Instance?.IsOpen == true && NGame.Instance != null)
 			{
 				HextechLog.Info($"[{ModInfo.Id}][Mayhem] HandleHextechActSelection: closing map before showing selection overlay");

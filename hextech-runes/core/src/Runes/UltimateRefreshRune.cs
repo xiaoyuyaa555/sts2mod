@@ -53,6 +53,11 @@ public sealed class UltimateRefreshRune : HextechRelicBase
 			return playCount;
 		}
 
+		if (HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
+		{
+			return playCount;
+		}
+
 		if (!IsOwnedNonXCardWithCostAtLeast(card, 2m))
 		{
 			return playCount;
@@ -63,7 +68,8 @@ public sealed class UltimateRefreshRune : HextechRelicBase
 
 	public override Task AfterModifyingCardPlayCount(CardModel card)
 	{
-		if (IsOwnedNonXCardWithCostAtLeast(card, 2m))
+		if (IsOwnedNonXCardWithCostAtLeast(card, 2m)
+			&& !HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
 		{
 			Flash();
 		}

@@ -121,6 +121,17 @@ public sealed class FanTheHammerRune : HextechRelicBase
 		return Task.CompletedTask;
 	}
 
+	public override Task AfterCardPlayedLate(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+	{
+		if (ReferenceEquals(cardPlay.Card, _damageReducedCard)
+			&& HextechReplayCompat.IsLastPlayInSeries(cardPlay))
+		{
+			ClearDamageReducedCard();
+		}
+
+		return Task.CompletedTask;
+	}
+
 	public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
 	{
 		if (Owner == null
@@ -145,18 +156,11 @@ public sealed class FanTheHammerRune : HextechRelicBase
 
 	private void TrackDamageReducedCard(CardModel card)
 	{
-		ClearDamageReducedCard();
 		_damageReducedCard = card;
-		card.Played += ClearDamageReducedCard;
 	}
 
 	private void ClearDamageReducedCard()
 	{
-		if (_damageReducedCard is CardModel card)
-		{
-			card.Played -= ClearDamageReducedCard;
-		}
-
 		_damageReducedCard = null;
 	}
 

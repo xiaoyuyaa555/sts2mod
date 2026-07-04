@@ -65,6 +65,11 @@ public sealed class TriPrismRune : HextechRelicBase
 
 	public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)
 	{
+		if (HextechReplayCompat.ShouldSkipUnsafeNetworkPowerReplay(card, ShouldUseNetworkCombatHistory()))
+		{
+			return playCount;
+		}
+
 		return ShouldTrigger(card) ? playCount + 1 : playCount;
 	}
 
