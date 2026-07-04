@@ -25,14 +25,14 @@ internal static partial class HextechRuneSelectionCoordinator
 			return RollWeightedRarity(runState, weights.Silver, weights.Gold, weights.Prismatic, deterministic: false, actIndex, enabledRarities);
 		}
 
-		if (actIndex == 1 && modifier.GetRarityForAct(0) == HextechRarityTier.Silver)
+		if (actIndex == 1)
 		{
-			HextechRarityWeights weights = modifier.SecondActAfterSilverRuneRarityWeights;
+			HextechRarityWeights weights = modifier.NormalRuneRarityWeights;
 			return RollWeightedRarity(runState, weights.Silver, weights.Gold, weights.Prismatic, deterministic: false, actIndex, enabledRarities);
 		}
 
-		HextechRarityWeights normalWeights = modifier.NormalRuneRarityWeights;
-		return RollWeightedRarity(runState, normalWeights.Silver, normalWeights.Gold, normalWeights.Prismatic, deterministic: false, actIndex, enabledRarities);
+		HextechRarityWeights thirdActWeights = modifier.SecondActAfterSilverRuneRarityWeights;
+		return RollWeightedRarity(runState, thirdActWeights.Silver, thirdActWeights.Gold, thirdActWeights.Prismatic, deterministic: false, actIndex, enabledRarities);
 	}
 
 	private static HextechRarityTier RollStableRarity(HextechMayhemModifier modifier, int actIndex, RunState runState, IReadOnlyList<HextechRarityTier> enabledRarities)
@@ -43,14 +43,14 @@ internal static partial class HextechRuneSelectionCoordinator
 			return RollWeightedRarity(runState, weights.Silver, weights.Gold, weights.Prismatic, deterministic: true, actIndex, enabledRarities);
 		}
 
-		if (actIndex == 1 && modifier.GetRarityForAct(0) == HextechRarityTier.Silver)
+		if (actIndex == 1)
 		{
-			HextechRarityWeights weights = modifier.SecondActAfterSilverRuneRarityWeights;
+			HextechRarityWeights weights = modifier.NormalRuneRarityWeights;
 			return RollWeightedRarity(runState, weights.Silver, weights.Gold, weights.Prismatic, deterministic: true, actIndex, enabledRarities);
 		}
 
-		HextechRarityWeights normalWeights = modifier.NormalRuneRarityWeights;
-		return RollWeightedRarity(runState, normalWeights.Silver, normalWeights.Gold, normalWeights.Prismatic, deterministic: true, actIndex, enabledRarities);
+		HextechRarityWeights thirdActWeights = modifier.SecondActAfterSilverRuneRarityWeights;
+		return RollWeightedRarity(runState, thirdActWeights.Silver, thirdActWeights.Gold, thirdActWeights.Prismatic, deterministic: true, actIndex, enabledRarities);
 	}
 
 	private static async Task<(HextechRarityTier Rarity, MonsterHexKind? MonsterHex)> ResolveActRoll(RunState runState, HextechMayhemModifier modifier, int actIndex)

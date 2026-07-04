@@ -9,7 +9,7 @@ namespace HextechRunes;
 internal static class HextechRuneConfiguration
 {
 	private const string ConfigFileName = "rune_config.json";
-	private const int CurrentConfigVersion = 13;
+	private const int CurrentConfigVersion = 14;
 	private const int HexActCount = 3;
 	private const int MinActHexCount = 0;
 	private const int MaxActHexCount = 6;
@@ -30,7 +30,8 @@ internal static class HextechRuneConfiguration
 	private static readonly int[] Version9EnemyHexCountsDefault = [ 1, 1, 1 ];
 	private static readonly HextechRarityWeights DefaultFirstActRuneRarityWeights = new(20, 50, 30);
 	private static readonly HextechRarityWeights DefaultNormalRuneRarityWeights = new(1, 1, 1);
-	private static readonly HextechRarityWeights DefaultSecondActAfterSilverRuneRarityWeights = new(0, 1, 1);
+	private static readonly HextechRarityWeights LegacySecondActAfterSilverRuneRarityWeights = new(0, 1, 1);
+	private static readonly HextechRarityWeights DefaultSecondActAfterSilverRuneRarityWeights = new(1, 1, 1);
 	private static readonly HextechForgeRarityWeights DefaultForgeRarityWeights = new(65, 25, 10);
 	private static readonly Type[] Version5DefaultDisabledRuneTypes =
 	[
@@ -380,8 +381,16 @@ internal static class HextechRuneConfiguration
 		config.NormalRuneRarityWeights = FromRarityWeights(NormalizeRarityWeights(
 			ToRarityWeights(config.NormalRuneRarityWeights, DefaultNormalRuneRarityWeights),
 			DefaultNormalRuneRarityWeights));
+		HextechRarityWeights thirdActRuneRarityWeights = ToRarityWeights(
+			config.SecondActAfterSilverRuneRarityWeights,
+			DefaultSecondActAfterSilverRuneRarityWeights);
+		if (previousConfigVersion < 14 && thirdActRuneRarityWeights == LegacySecondActAfterSilverRuneRarityWeights)
+		{
+			thirdActRuneRarityWeights = DefaultSecondActAfterSilverRuneRarityWeights;
+		}
+
 		config.SecondActAfterSilverRuneRarityWeights = FromRarityWeights(NormalizeRarityWeights(
-			ToRarityWeights(config.SecondActAfterSilverRuneRarityWeights, DefaultSecondActAfterSilverRuneRarityWeights),
+			thirdActRuneRarityWeights,
 			DefaultSecondActAfterSilverRuneRarityWeights));
 		config.ForgeRarityWeights = FromForgeRarityWeights(NormalizeForgeRarityWeights(
 			ToForgeRarityWeights(config.ForgeRarityWeights, DefaultForgeRarityWeights),

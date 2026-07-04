@@ -677,7 +677,7 @@ internal static class HextechRuneConfigMenuHooks
 	{
 		VBoxContainer page = CreatePageContainer(compactLayout);
 		page.AddChild(CreatePoolGroupHeader(L("HEXTECH_PLAYER_POOL_TITLE"), compactLayout));
-		AddIconPoolEntries(page, playerEntries, pendingDisabledPlayerIds, loadTargets, badgeRefreshers, compactLayout);
+		AddIconPoolEntries(page, playerEntries, pendingDisabledPlayerIds, loadTargets, badgeRefreshers, compactLayout, groupByPool: true);
 		page.AddChild(CreatePoolGroupHeader(L("HEXTECH_ENEMY_POOL_TITLE"), compactLayout));
 		AddIconPoolEntries(page, enemyEntries, pendingDisabledMonsterHexIds, loadTargets, badgeRefreshers, compactLayout);
 		return page;
@@ -710,7 +710,8 @@ internal static class HextechRuneConfigMenuHooks
 		HashSet<string> pendingDisabledIds,
 		List<RuneConfigLoadTarget> loadTargets,
 		List<Action> badgeRefreshers,
-		bool compactLayout)
+		bool compactLayout,
+		bool groupByPool = false)
 	{
 		foreach (IGrouping<int, RuneConfigEntry> rarityGroup in entries.GroupBy(static entry => entry.RarityOrder))
 		{
@@ -736,35 +737,47 @@ internal static class HextechRuneConfigMenuHooks
 					card.AddChild(CreateSourceHeader(sourceGroup.First().SourceText, compactLayout));
 				}
 
-				VBoxContainer grid = CreateRuneGrid(compactLayout);
-				card.AddChild(grid);
-
-				HBoxContainer? currentRow = null;
-				int column = 0;
-				foreach (RuneConfigEntry entry in sourceGroup)
+				IEnumerable<IGrouping<string, RuneConfigEntry>> poolGroups = groupByPool
+					? sourceGroup.GroupBy(static entry => entry.PoolKey)
+					: [ sourceGroup ];
+				foreach (IGrouping<string, RuneConfigEntry> poolGroup in poolGroups)
 				{
-					if (column == 0)
+					if (groupByPool)
 					{
-						currentRow = CreateRuneRow(compactLayout);
-						grid.AddChild(currentRow);
+						RuneConfigEntry firstEntry = poolGroup.First();
+						card.AddChild(CreatePoolHeader(firstEntry.PoolText, firstEntry.PoolKey, compactLayout));
 					}
 
-					CenterContainer slot = CreateRuneSlot();
-					currentRow?.AddChild(slot);
-					loadTargets.Add(new RuneConfigLoadTarget(entry, slot, pendingDisabledIds));
+					VBoxContainer grid = CreateRuneGrid(compactLayout);
+					card.AddChild(grid);
 
-					column++;
-					if (column == RuneConfigColumns)
+					HBoxContainer? currentRow = null;
+					int column = 0;
+					foreach (RuneConfigEntry entry in poolGroup)
 					{
-						column = 0;
+						if (column == 0)
+						{
+							currentRow = CreateRuneRow(compactLayout);
+							grid.AddChild(currentRow);
+						}
+
+						CenterContainer slot = CreateRuneSlot();
+						currentRow?.AddChild(slot);
+						loadTargets.Add(new RuneConfigLoadTarget(entry, slot, pendingDisabledIds));
+
+						column++;
+						if (column == RuneConfigColumns)
+						{
+							column = 0;
+						}
 					}
-				}
 
-				if (currentRow != null && column > 0)
-				{
-					for (; column < RuneConfigColumns; column++)
+					if (currentRow != null && column > 0)
 					{
-						currentRow.AddChild(CreateRuneSlot());
+						for (; column < RuneConfigColumns; column++)
+						{
+							currentRow.AddChild(CreateRuneSlot());
+						}
 					}
 				}
 			}
@@ -987,9 +1000,9 @@ internal static class HextechRuneConfigMenuHooks
 		grid.AddChild(CreateRarityColumnHeader(L("HEXTECH_RARITY_GOLD"), HextechRarityTier.Gold, compactLayout));
 		grid.AddChild(CreateRarityColumnHeader(L("HEXTECH_RARITY_PRISMATIC"), HextechRarityTier.Prismatic, compactLayout));
 
-		AddWeightMatrixRow(grid, L("HEXTECH_RARITY_WEIGHTS_ROW_FIRST_ACT"), firstActWeights, numericBindings, compactLayout);
-		AddWeightMatrixRow(grid, L("HEXTECH_RARITY_WEIGHTS_ROW_NORMAL"), normalWeights, numericBindings, compactLayout);
-		AddWeightMatrixRow(grid, L("HEXTECH_RARITY_WEIGHTS_ROW_AFTER_SILVER"), afterSilverWeights, numericBindings, compactLayout);
+		AddWeightMatrixRow(grid, L("HEXTECH_RARITY_WEIGHTS_ROW_ACT1"), firstActWeights, numericBindings, compactLayout);
+		AddWeightMatrixRow(grid, L("HEXTECH_RARITY_WEIGHTS_ROW_ACT2"), normalWeights, numericBindings, compactLayout);
+		AddWeightMatrixRow(grid, L("HEXTECH_RARITY_WEIGHTS_ROW_ACT3"), afterSilverWeights, numericBindings, compactLayout);
 		AddWeightMatrixRow(grid, L("HEXTECH_RARITY_WEIGHTS_ROW_FORGE"), forgeWeights, numericBindings, compactLayout);
 		return card;
 	}
@@ -1661,6 +1674,69 @@ internal static class HextechRuneConfigMenuHooks
 		Label label = CreateLabel(text, compactLayout ? 14 : 15, new Color(0.68f, 0.82f, 0.98f, 0.92f));
 		label.CustomMinimumSize = new Vector2(0f, compactLayout ? 18f : 22f);
 		return label;
+	}
+
+	private static Control CreatePoolHeader(string text, string poolKey, bool compactLayout)
+	{
+		HBoxContainer row = new()
+		{
+			SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+			MouseFilter = Control.MouseFilterEnum.Pass
+		};
+		row.AddThemeConstantOverride("separation", compactLayout ? 7 : 10);
+
+		PanelContainer avatar = new()
+		{
+			CustomMinimumSize = compactLayout ? new Vector2(30f, 30f) : new Vector2(34f, 34f),
+			MouseFilter = Control.MouseFilterEnum.Ignore
+		};
+		Color poolAccent = GetPoolAccentColor(poolKey);
+		StyleBoxFlat avatarStyle = new()
+		{
+			BgColor = new Color(poolAccent.R, poolAccent.G, poolAccent.B, 0.22f),
+			BorderColor = new Color(poolAccent.R, poolAccent.G, poolAccent.B, 0.9f)
+		};
+		avatarStyle.SetBorderWidthAll(2);
+		avatarStyle.SetCornerRadiusAll(compactLayout ? 15 : 17);
+		avatar.AddThemeStyleboxOverride("panel", avatarStyle);
+
+		Label avatarText = CreateLabel(GetPoolAvatarText(poolKey, text), compactLayout ? 13 : 15, new Color(1f, 0.96f, 0.82f, 1f));
+		avatarText.HorizontalAlignment = HorizontalAlignment.Center;
+		avatarText.VerticalAlignment = VerticalAlignment.Center;
+		avatar.AddChild(avatarText);
+		row.AddChild(avatar);
+
+		Label label = CreateSourceHeader(text, compactLayout);
+		label.VerticalAlignment = VerticalAlignment.Center;
+		row.AddChild(label);
+		return row;
+	}
+
+	private static string GetPoolAvatarText(string poolKey, string text)
+	{
+		return poolKey.ToUpperInvariant() switch
+		{
+			"IRONCLAD" => "IC",
+			"SILENT" => "SI",
+			"REGENT" => "RG",
+			"DEFECT" => "DF",
+			"NECROBINDER" => "NB",
+			"GENERIC" => "ALL",
+			_ => string.IsNullOrWhiteSpace(text) ? "?" : text.Trim()[0].ToString()
+		};
+	}
+
+	private static Color GetPoolAccentColor(string poolKey)
+	{
+		return poolKey.ToUpperInvariant() switch
+		{
+			"IRONCLAD" => new Color(0.86f, 0.3f, 0.22f, 1f),
+			"SILENT" => new Color(0.44f, 0.74f, 0.38f, 1f),
+			"REGENT" => new Color(0.88f, 0.68f, 0.3f, 1f),
+			"DEFECT" => new Color(0.38f, 0.66f, 0.95f, 1f),
+			"NECROBINDER" => new Color(0.66f, 0.5f, 0.95f, 1f),
+			_ => new Color(0.68f, 0.82f, 0.98f, 1f)
+		};
 	}
 
 	private static VBoxContainer CreateRuneGrid(bool compactLayout)
