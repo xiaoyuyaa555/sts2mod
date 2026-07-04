@@ -89,10 +89,11 @@ internal static class AiTeammateQuickStart
 
     private static void BeginRun(StartRunLobby lobby, string seed)
     {
-        MethodInfo? beginRunMethod = AccessTools.Method(typeof(StartRunLobby), "BeginRunForAllPlayers");
+        MethodInfo? beginRunMethod = AccessTools.Method(typeof(StartRunLobby), "BeginRunForAllPlayers", new[] { typeof(string), typeof(List<ModifierModel>) })
+            ?? AccessTools.Method(typeof(StartRunLobby), "BeginRun", new[] { typeof(string), typeof(List<ModifierModel>) });
         if (beginRunMethod == null)
         {
-            Log.Error("[AITeammate] Quick-start could not find StartRunLobby.BeginRunForAllPlayers.");
+            Log.Error("[AITeammate] Quick-start could not find StartRunLobby begin-run method.");
             return;
         }
 

@@ -46,9 +46,17 @@ internal static class AiTeammatePlatformUtilGetPlayerNamePatch
     }
 }
 
-[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]
+[HarmonyPatch]
 internal static class AiTeammateStartRunLobbyBeginRunPatch
 {
+    [HarmonyTargetMethod]
+    private static MethodBase TargetMethod()
+    {
+        Type[] parameters = [typeof(string), typeof(List<ModifierModel>)];
+        return AccessTools.Method(typeof(StartRunLobby), "BeginRunForAllPlayers", parameters)
+            ?? AccessTools.Method(typeof(StartRunLobby), "BeginRun", parameters)
+            ?? throw new MissingMethodException(typeof(StartRunLobby).FullName, "BeginRun");
+    }
     [HarmonyPrefix]
     private static bool Prefix(StartRunLobby __instance, string seed, List<ModifierModel> modifiers)
     {
@@ -57,7 +65,7 @@ internal static class AiTeammateStartRunLobbyBeginRunPatch
             return true;
         }
 
-        Log.Info("[AITeammate] Intercepting StartRunLobby.BeginRunForAllPlayers for local AI teammate loopback.");
+        Log.Info("[AITeammate] Intercepting StartRunLobby begin-run for local AI teammate loopback.");
         AiTeammateOriginalMultiplayerUi.SyncSessionFromLobby(__instance);
         if (AiTeammateSessionRegistry.Current is { AiCount: > 0 } sessionState)
         {
@@ -78,8 +86,7 @@ internal static class AiTeammateStartRunLobbyBeginRunPatch
         __instance.NetService.SendMessage(beginRunMessage);
 
         UnlockState unlockState = GetUnlockState(__instance);
-        Rng rng = new((uint)StringHelper.GetDeterministicHashCode(seed));
-        List<ActModel> acts = ActModel.GetRandomList(rng, unlockState, __instance.NetService.Type.IsMultiplayer()).ToList();
+        List<ActModel> acts = ActModel.GetRandomList(seed, unlockState, __instance.NetService.Type.IsMultiplayer()).ToList();
         ActModel? act1Override = GetAct1(__instance.Act1);
         if (act1Override != null)
         {
@@ -87,6 +94,7 @@ internal static class AiTeammateStartRunLobbyBeginRunPatch
         }
 
         AccessTools.Field(typeof(StartRunLobby), "_isBeginningRun")?.SetValue(__instance, true);
+        AccessTools.Field(typeof(StartRunLobby), "_beginningRun")?.SetValue(__instance, true);
         __instance.LobbyListener.BeginRun(seed, acts, modifiers);
         return false;
     }

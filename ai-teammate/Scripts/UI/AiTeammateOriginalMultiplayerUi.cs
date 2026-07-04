@@ -108,7 +108,7 @@ internal static class AiTeammateOriginalMultiplayerUi
         lobby.Players[playerIndex] = lobbyPlayer;
 
         SyncSessionFromLobby(lobby);
-        lobby.LobbyListener.PlayerChanged(lobbyPlayer, isRandomCharacterResolution: false);
+        lobby.LobbyListener.PlayerChanged(lobbyPlayer);
         RefreshRemotePlayerNamesForLobby(lobby);
         Log.Info($"[AITeammate] Changed selected AI character. player={activePlayerId}, character={character.Id.Entry}");
         return true;
@@ -437,7 +437,7 @@ internal static class AiTeammateOriginalMultiplayerUi
         }
 
         SyncSessionFromLobby(lobby);
-        lobby.LobbyListener.PlayerChanged(lobbyPlayer, isRandomCharacterResolution: false);
+        lobby.LobbyListener.PlayerChanged(lobbyPlayer);
         RefreshRemotePlayerNamesForLobby(lobby);
         return true;
     }

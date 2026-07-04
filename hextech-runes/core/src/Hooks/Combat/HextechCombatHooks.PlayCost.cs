@@ -55,6 +55,11 @@ internal static partial class HextechCombatHooks
 
 		return CaptureResourceSpend(card);
 	}
+	internal static bool IsActualCardPlayInProgress(CardModel card)
+	{
+		return (ActivePlayEnergyValues.TryGetValue(card, out Stack<int>? energyValues) && energyValues.Count > 0)
+			|| (ActivePlayResourceSpends.TryGetValue(card, out Stack<HextechCardPlayResourceSpend>? resourceSpends) && resourceSpends.Count > 0);
+	}
 
 	private static bool CardSpendResourcesPrefix(CardModel __instance, ref Task<ValueTuple<int, int>> __result)
 	{

@@ -1758,7 +1758,6 @@ internal static class CombatActionResolverSimulator
                 Players = liveRun.Players.Select(static player => player.ToSerializable()).ToList(),
                 SerializableRng = liveRun.Rng.ToSerializable(),
                 Ascension = liveRun.AscensionLevel,
-                GameMode = liveRun.GameMode,
                 MapPointHistory = []
             };
 

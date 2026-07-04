@@ -902,7 +902,7 @@ internal sealed class FutureRewardOracle
                 RelicModel? model = ModelDb.GetByIdOrNull<RelicModel>(ids[index]);
                 if (model == null ||
                     !model.IsAllowed(player.RunState) ||
-                    shopOnly && !model.IsAllowedInShops)
+                    shopOnly && !IsAllowedInShopsCompat(model))
                 {
                     continue;
                 }
@@ -1079,6 +1079,13 @@ internal sealed class FutureRewardOracle
         return $"{point.coord.col},{point.coord.row}";
     }
 
+    private static bool IsAllowedInShopsCompat(RelicModel model)
+    {
+        // v0.99.1 RelicModel does not expose IsAllowedInShops. Treat absent metadata as allowed so
+        // the map oracle remains non-blocking for lobby/custom-mode automation.
+        System.Reflection.PropertyInfo? property = model.GetType().GetProperty("IsAllowedInShops");
+        return property == null || property.GetValue(model) is not bool allowed || allowed;
+    }
     private sealed class RewardSimulationState
     {
         private RewardSimulationState(
@@ -1236,6 +1243,7 @@ internal sealed record FutureRewardRouteEvaluation(
             RewardValue + future.RewardValue * discount,
             CombatRewardCount + future.CombatRewardCount);
     }
+
 }
 
 internal sealed record FutureCardRewardPreview(

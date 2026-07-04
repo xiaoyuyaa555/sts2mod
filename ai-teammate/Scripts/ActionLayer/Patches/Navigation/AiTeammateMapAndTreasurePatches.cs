@@ -75,7 +75,7 @@ internal static class AiTeammateMapAndTreasurePatches
             return;
         }
 
-        MapLocation source = runState.MapLocation;
+        RunLocation source = runState.CurrentLocation;
         MapVote vote = new()
         {
             coord = destination.coord,
@@ -181,8 +181,8 @@ internal static class AiTeammateMapAndTreasurePatches
         if (hostAutopilotEnabled &&
             runState?.GetPlayer(session.HostPlayerId) is { } hostPlayer)
         {
-            TreasureRoomRelicSynchronizer.PlayerVote hostVote = synchronizer.GetPlayerVote(hostPlayer);
-            if (!hostVote.voteReceived)
+            int? hostVote = synchronizer.GetPlayerVote(hostPlayer);
+            if (!hostVote.HasValue)
             {
                 if (!ShouldEnqueueTreasureRelicVote(hostPlayer.NetId))
                 {
@@ -211,8 +211,8 @@ internal static class AiTeammateMapAndTreasurePatches
                 continue;
             }
 
-            TreasureRoomRelicSynchronizer.PlayerVote playerVote = synchronizer.GetPlayerVote(aiPlayer);
-            if (playerVote.voteReceived)
+            int? playerVote = synchronizer.GetPlayerVote(aiPlayer);
+            if (playerVote.HasValue)
             {
                 PendingTreasureRelicVotes.Remove(participant.PlayerId);
                 voteCursor++;
@@ -911,12 +911,12 @@ internal static class AiTeammateMapAndTreasurePatches
         int CombatsBeforeFirstRest,
         int ElitesBeforeFirstRest);
 
-    private static string BuildAutoMapVoteKey(MapLocation source, MapVote vote)
+    private static string BuildAutoMapVoteKey(RunLocation source, MapVote vote)
     {
         return $"{FormatMapLocation(source)}|gen={vote.mapGenerationCount}|dest={vote.coord.col},{vote.coord.row}";
     }
 
-    private static string FormatMapLocation(MapLocation location)
+    private static string FormatMapLocation(RunLocation location)
     {
         return location.coord.HasValue
             ? $"act={location.actIndex}:{location.coord.Value.col},{location.coord.Value.row}"
@@ -926,7 +926,7 @@ internal static class AiTeammateMapAndTreasurePatches
     [HarmonyPatch(typeof(MapSelectionSynchronizer), nameof(MapSelectionSynchronizer.PlayerVotedForMapCoord))]
     private static class MapSelectionSynchronizerPatch
     {
-        private static void Postfix(Player player, MapLocation source, MapVote? destination)
+        private static void Postfix(Player player, RunLocation source, MapVote? destination)
         {
             AiTeammateSessionState? session = AiTeammateSessionRegistry.ActiveRunSession;
             if (session == null ||

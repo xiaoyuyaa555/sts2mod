@@ -256,10 +256,10 @@ internal static class AiTeammatePeerInputStateSync
         int? voteIndex = null;
         if (player != null)
         {
-            TreasureRoomRelicSynchronizer.PlayerVote playerVote = RunManager.Instance.TreasureRoomRelicSynchronizer.GetPlayerVote(player);
-            if (playerVote.voteReceived)
+            int? playerVote = RunManager.Instance.TreasureRoomRelicSynchronizer.GetPlayerVote(player);
+            if (playerVote.HasValue)
             {
-                voteIndex = playerVote.index;
+                voteIndex = playerVote.Value;
             }
         }
 

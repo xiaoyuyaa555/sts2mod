@@ -69,6 +69,15 @@ public sealed class JeweledGauntletRune : HextechRelicBase
 			return playCount;
 		}
 
+		// Card play count is also queried by UI/preview code. Rolling there makes the
+		// displayed xN marker drift from the actual replay count. Only roll while the
+		// real CardModel.OnPlayWrapper call is active.
+		if (!HextechCombatHooks.IsActualCardPlayInProgress(card))
+		{
+			ClearPendingReplayRoll();
+			return playCount;
+		}
+
 		int ordinal = ConsumeCombatProcOrdinal(nameof(JeweledGauntletRune), ref _replayRollsThisCombat);
 		bool shouldReplay = HextechStableRandom.PercentChance(
 			(RunState)Owner.RunState,
