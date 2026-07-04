@@ -30,6 +30,7 @@ internal static class HextechRuneConfigMenuHooks
 	private const string BaseConfigSourceKey = "0:HextechRunes";
 	private const string ExternalConfigSourcePrefix = "1:";
 	private const string SponsorPackModId = "HextechRunesSponsorPack";
+	private const string PoolPortraitPathPrefix = "res://HextechRunes/images/ui/character_portraits/";
 	private const float ConfigRuneHolderScale = 1.3f;
 	private const float RuneConfigCellWidth = 108f;
 	private const float RuneConfigCellHeight = 136f;
@@ -739,6 +740,7 @@ internal static class HextechRuneConfigMenuHooks
 
 				IEnumerable<IGrouping<string, RuneConfigEntry>> poolGroups = groupByPool
 					? sourceGroup.GroupBy(static entry => entry.PoolKey)
+						.OrderBy(static group => GetPoolSortOrder(group.Key))
 					: [ sourceGroup ];
 				foreach (IGrouping<string, RuneConfigEntry> poolGroup in poolGroups)
 				{
@@ -1700,10 +1702,25 @@ internal static class HextechRuneConfigMenuHooks
 		avatarStyle.SetCornerRadiusAll(compactLayout ? 15 : 17);
 		avatar.AddThemeStyleboxOverride("panel", avatarStyle);
 
-		Label avatarText = CreateLabel(GetPoolAvatarText(poolKey, text), compactLayout ? 13 : 15, new Color(1f, 0.96f, 0.82f, 1f));
-		avatarText.HorizontalAlignment = HorizontalAlignment.Center;
-		avatarText.VerticalAlignment = VerticalAlignment.Center;
-		avatar.AddChild(avatarText);
+		if (GetPoolPortrait(poolKey) is Texture2D portrait)
+		{
+			TextureRect portraitRect = new()
+			{
+				Texture = portrait,
+				CustomMinimumSize = compactLayout ? new Vector2(30f, 30f) : new Vector2(34f, 34f),
+				ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+				StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered,
+				MouseFilter = Control.MouseFilterEnum.Ignore
+			};
+			avatar.AddChild(portraitRect);
+		}
+		else
+		{
+			Label avatarText = CreateLabel(GetPoolAvatarText(poolKey, text), compactLayout ? 13 : 15, new Color(1f, 0.96f, 0.82f, 1f));
+			avatarText.HorizontalAlignment = HorizontalAlignment.Center;
+			avatarText.VerticalAlignment = VerticalAlignment.Center;
+			avatar.AddChild(avatarText);
+		}
 		row.AddChild(avatar);
 
 		Label label = CreateSourceHeader(text, compactLayout);
@@ -1716,16 +1733,63 @@ internal static class HextechRuneConfigMenuHooks
 	{
 		return poolKey.ToUpperInvariant() switch
 		{
-			"IRONCLAD" => "IC",
-			"SILENT" => "SI",
-			"REGENT" => "RG",
-			"DEFECT" => "DF",
-			"NECROBINDER" => "NB",
-			"GENERIC" => "ALL",
+			"IRONCLAD" => "\u94c1",
+			"SILENT" => "\u9759",
+			"REGENT" => "\u50a8",
+			"DEFECT" => "\u6545",
+			"NECROBINDER" => "\u4ea1",
+			"GENERIC" => "\u901a",
 			_ => string.IsNullOrWhiteSpace(text) ? "?" : text.Trim()[0].ToString()
 		};
 	}
 
+	private static Texture2D? GetPoolPortrait(string poolKey)
+	{
+		string fileName = poolKey.ToUpperInvariant() switch
+		{
+			"IRONCLAD" => "IC.png",
+			"SILENT" => "SI.png",
+			"REGENT" => "RG.png",
+			"DEFECT" => "DF.png",
+			"NECROBINDER" => "NB.png",
+			_ => string.Empty
+		};
+		if (string.IsNullOrEmpty(fileName))
+		{
+			return null;
+		}
+
+		string path = PoolPortraitPathPrefix + fileName;
+		return ResourceLoader.Exists(path) ? ResourceLoader.Load<Texture2D>(path) : null;
+	}
+
+	private static int GetPoolSortOrder(string poolKey)
+	{
+		return poolKey.ToUpperInvariant() switch
+		{
+			"IRONCLAD" => 0,
+			"SILENT" => 1,
+			"REGENT" => 2,
+			"NECROBINDER" => 3,
+			"DEFECT" => 4,
+			"GENERIC" => 5,
+			_ => 6
+		};
+	}
+
+	private static string GetConfigPoolDisplayName(string poolKey)
+	{
+		return poolKey.ToUpperInvariant() switch
+		{
+			"IRONCLAD" => "\u94c1\u7532\u6218\u58eb",
+			"SILENT" => "\u9759\u9ed8\u730e\u624b",
+			"REGENT" => "\u50a8\u541b",
+			"NECROBINDER" => "\u4ea1\u7075\u5951\u7ea6\u5e08",
+			"DEFECT" => "\u6545\u969c\u673a\u5668\u4eba",
+			"GENERIC" => "\u901a\u7528",
+			_ => new LocString(LocTable, "HEXTECH_POOL." + poolKey).GetRawText()
+		};
+	}
 	private static Color GetPoolAccentColor(string poolKey)
 	{
 		return poolKey.ToUpperInvariant() switch
@@ -2132,7 +2196,7 @@ internal static class HextechRuneConfigMenuHooks
 				relic,
 				relic.Title.GetFormattedText(),
 				new LocString(LocTable, "HEXTECH_SERIES." + rarityKey).GetRawText(),
-				new LocString(LocTable, "HEXTECH_POOL." + poolKey).GetRawText(),
+				GetConfigPoolDisplayName(poolKey),
 				new LocString(LocTable, "HEXTECH_TAG." + tagKey).GetRawText(),
 				(int)rarity,
 				poolKey,
@@ -2144,7 +2208,7 @@ internal static class HextechRuneConfigMenuHooks
 		return entries
 			.OrderBy(static entry => entry.RarityOrder)
 			.ThenBy(static entry => entry.SourceKey, StringComparer.Ordinal)
-			.ThenBy(static entry => entry.PoolKey, StringComparer.Ordinal)
+			.ThenBy(static entry => GetPoolSortOrder(entry.PoolKey))
 			.ThenBy(static entry => entry.TagKey, StringComparer.Ordinal)
 			.ThenBy(static entry => entry.Title, StringComparer.CurrentCulture)
 			.ToList();
