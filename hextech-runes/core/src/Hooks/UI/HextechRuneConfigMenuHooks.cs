@@ -1687,41 +1687,42 @@ internal static class HextechRuneConfigMenuHooks
 		};
 		row.AddThemeConstantOverride("separation", compactLayout ? 7 : 10);
 
-		PanelContainer avatar = new()
-		{
-			CustomMinimumSize = compactLayout ? new Vector2(30f, 30f) : new Vector2(34f, 34f),
-			MouseFilter = Control.MouseFilterEnum.Ignore
-		};
-		Color poolAccent = GetPoolAccentColor(poolKey);
-		StyleBoxFlat avatarStyle = new()
-		{
-			BgColor = new Color(poolAccent.R, poolAccent.G, poolAccent.B, 0.22f),
-			BorderColor = new Color(poolAccent.R, poolAccent.G, poolAccent.B, 0.9f)
-		};
-		avatarStyle.SetBorderWidthAll(2);
-		avatarStyle.SetCornerRadiusAll(compactLayout ? 15 : 17);
-		avatar.AddThemeStyleboxOverride("panel", avatarStyle);
-
+		Vector2 avatarSize = compactLayout ? new Vector2(30f, 30f) : new Vector2(34f, 34f);
 		if (GetPoolPortrait(poolKey) is Texture2D portrait)
 		{
 			TextureRect portraitRect = new()
 			{
 				Texture = portrait,
-				CustomMinimumSize = compactLayout ? new Vector2(30f, 30f) : new Vector2(34f, 34f),
+				CustomMinimumSize = avatarSize,
 				ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
 				StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered,
 				MouseFilter = Control.MouseFilterEnum.Ignore
 			};
-			avatar.AddChild(portraitRect);
+			row.AddChild(portraitRect);
 		}
 		else
 		{
+			PanelContainer avatar = new()
+			{
+				CustomMinimumSize = avatarSize,
+				MouseFilter = Control.MouseFilterEnum.Ignore
+			};
+			Color poolAccent = GetPoolAccentColor(poolKey);
+			StyleBoxFlat avatarStyle = new()
+			{
+				BgColor = new Color(poolAccent.R, poolAccent.G, poolAccent.B, 0.22f),
+				BorderColor = new Color(poolAccent.R, poolAccent.G, poolAccent.B, 0.9f)
+			};
+			avatarStyle.SetBorderWidthAll(2);
+			avatarStyle.SetCornerRadiusAll(compactLayout ? 15 : 17);
+			avatar.AddThemeStyleboxOverride("panel", avatarStyle);
+
 			Label avatarText = CreateLabel(GetPoolAvatarText(poolKey, text), compactLayout ? 13 : 15, new Color(1f, 0.96f, 0.82f, 1f));
 			avatarText.HorizontalAlignment = HorizontalAlignment.Center;
 			avatarText.VerticalAlignment = VerticalAlignment.Center;
 			avatar.AddChild(avatarText);
+			row.AddChild(avatar);
 		}
-		row.AddChild(avatar);
 
 		Label label = CreateSourceHeader(text, compactLayout);
 		label.VerticalAlignment = VerticalAlignment.Center;
