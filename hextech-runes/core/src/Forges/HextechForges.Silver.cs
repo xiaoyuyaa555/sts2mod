@@ -189,6 +189,56 @@ public sealed class LifeForge : HextechForgeBase
 	}
 }
 
+
+public sealed class SilverHpForge : HextechForgeBase
+{
+	public override bool HasUponPickupEffect => true;
+
+	protected override IEnumerable<DynamicVar> CanonicalVars =>
+	[
+		new DynamicVar("MaxHpPercent", 7.5m)
+	];
+
+	public override Task AfterObtained()
+	{
+		if (Owner == null)
+		{
+			return Task.CompletedTask;
+		}
+
+		int maxHpGain = Math.Max(1, FloorToInt(Owner.Creature.MaxHp * DynamicVars["MaxHpPercent"].BaseValue / 100m));
+		Flash();
+		return CreatureCmd.GainMaxHp(Owner.Creature, maxHpGain);
+	}
+}
+
+public sealed class SilverAttackForge : HextechForgeBase
+{
+	protected override IEnumerable<DynamicVar> CanonicalVars =>
+	[
+		new DynamicVar("DamageMultiplier", 1.05m)
+	];
+
+	public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+	{
+		return IsDamageFromOwnerToEnemyOrPreview(target, dealer, cardSource) ? StackedMultiplier(DynamicVars["DamageMultiplier"].BaseValue) : 1m;
+	}
+}
+
+public sealed class SilverProtectionForge : HextechForgeBase
+{
+	protected override IEnumerable<DynamicVar> CanonicalVars =>
+	[
+		new DynamicVar("SustainMultiplier", 1.05m)
+	];
+
+	public decimal SustainMultiplier => StackedMultiplier(DynamicVars["SustainMultiplier"].BaseValue);
+
+	public override decimal ModifyBlockMultiplicative(Creature target, decimal block, ValueProp props, CardModel? cardSource, CardPlay? cardPlay)
+	{
+		return target == Owner?.Creature ? SustainMultiplier : 1m;
+	}
+}
 public sealed class PocketForge : HextechForgeBase
 {
 	public override bool HasUponPickupEffect => true;
