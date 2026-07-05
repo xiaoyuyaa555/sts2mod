@@ -185,6 +185,7 @@ internal static class HextechMultiplayerCompatibilityHooks
 			harmony,
 			target,
 			$"{type.Name}.{methodName} protocol mismatch fail-safe",
+			prefix: new HarmonyMethod(typeof(HextechSavedPropertyNetIdHooks), nameof(HextechSavedPropertyNetIdHooks.EnsureCanonicalized)),
 			finalizer: new HarmonyMethod(typeof(HextechMultiplayerCompatibilityHooks), finalizerName));
 	}
 

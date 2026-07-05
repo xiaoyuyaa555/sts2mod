@@ -32,6 +32,7 @@ public static class ModEntry
 			#if !STS2_99_1 && !STS2_100_0
 			TryInstallOptionalHookGroup("model id serialization warning compatibility", () => HextechModelIdSerializationWarningHooks.Install(harmony));
 #endif
+			HextechSavedPropertyNetIdHooks.Install(harmony);
 			HextechMultiplayerCompatibilityHooks.Install(harmony);
 			HextechMobileModelRegistrationHooks.Install(harmony);
 			ThoughtOverwriteKeywordPersistenceHooks.Install(harmony);
