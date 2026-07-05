@@ -328,7 +328,7 @@ internal sealed class HextechMayhemActState
 		HashSet<MonsterHexKind> seen = new();
 		for (int actIndex = 0; actIndex < Math.Min(ActCountValue, value.Length); actIndex++)
 		{
-			int rawHex = value[actIndex];
+			int rawHex = MonsterHexKindMigration.RemapRawValue(value[actIndex]);
 			if (Enum.IsDefined(typeof(MonsterHexKind), rawHex))
 			{
 				MonsterHexKind hex = (MonsterHexKind)rawHex;
@@ -493,8 +493,9 @@ internal sealed class HextechMayhemActState
 			return normalized;
 		}
 
-		foreach (int rawHex in value)
+		foreach (int rawValue in value)
 		{
+			int rawHex = MonsterHexKindMigration.RemapRawValue(rawValue);
 			if (!Enum.IsDefined(typeof(MonsterHexKind), rawHex))
 			{
 				continue;

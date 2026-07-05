@@ -187,7 +187,7 @@ internal static class HextechRuneConfiguration
 			.SelectMany(static kinds => kinds)
 			.Select(static kind => kind.ToString())
 			.ToHashSet(StringComparer.Ordinal);
-		return NormalizeStringIds(ids, validIds);
+		return NormalizeStringIds(ids?.Select(MonsterHexKindMigration.RemapName), validIds);
 	}
 
 	internal static HashSet<string> NormalizeDisabledForgeIds(IEnumerable<string>? ids)
